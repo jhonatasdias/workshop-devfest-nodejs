@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "devfest-delivery",
+            "database": "${workspaceFolder:workshop-devfest-nodejs}/delivery.db"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}

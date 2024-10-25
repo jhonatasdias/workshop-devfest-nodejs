@@ -1,0 +1,37 @@
+[
+    {
+        "nome": "La Bella Italia",
+        "especialidade": "Italiano",
+        "endereco": "Rua dos Sabores, 12",
+        "telefone": "11987654321",
+        "avaliacao": 4.8
+    },
+    {
+        "nome": "Sushi Express",
+        "especialidade": "Japonês",
+        "endereco": "Avenida Tokyo, 145",
+        "telefone": "11876543210",
+        "avaliacao": 4.5
+    },
+    {
+        "nome": "Churrascaria Gaúcha",
+        "especialidade": "Brasileiro",
+        "endereco": "Rua dos Pampas, 34",
+        "telefone": "11321098765",
+        "avaliacao": 4.7
+    },
+    {
+        "nome": "Burger Town",
+        "especialidade": "Hambúrguer",
+        "endereco": "Avenida Fast Food, 321",
+        "telefone": "11765432109",
+        "avaliacao": 4.3
+    },
+    {
+        "nome": "Pasta Fresca",
+        "especialidade": "Massas",
+        "endereco": "Rua das Pastas, 56",
+        "telefone": "11999887766",
+        "avaliacao": 4.9
+    }    
+]
