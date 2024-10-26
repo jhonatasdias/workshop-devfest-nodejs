@@ -18,6 +18,6 @@ async function openConnection() {
 }
 
 module.exports = {
-    dbConnection: openConnection,
+    openConnection,
     sequelize
 }

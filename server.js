@@ -1,10 +1,10 @@
 const express = require('express');
-const { dbConnection } = require('./db-connection');
 const restauranteRouter = require('./router');
+const { openConnection } = require('./db');
 
 const app = express();
 
-dbConnection();
+openConnection();
 
 app.use(express.json());
 
