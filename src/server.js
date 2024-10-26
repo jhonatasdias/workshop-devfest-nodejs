@@ -1,5 +1,5 @@
 const express = require('express');
-const { dbConnection } = require('./db-connection');
+const { dbConnection } = require('./db');
 const restauranteRouter = require('./router');
 
 const app = express();
@@ -16,6 +16,7 @@ app.use((err, req, res, next) => {
 })
 
 const PORT = 3000;
+
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`);
 });

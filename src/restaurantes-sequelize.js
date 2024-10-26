@@ -1,4 +1,4 @@
-const { sequelize } = require('./db-connection');
+const { sequelize } = require('./db');
 const { DataTypes } = require('sequelize');
 
 const Restaurantes = sequelize.define('restaurantes', {
