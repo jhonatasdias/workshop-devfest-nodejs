@@ -7,7 +7,7 @@ const sequelize = new Sequelize({
 });
 
 // create table restaurantes
-async function dbConnection() {
+async function openConnection() {
     try {
         await sequelize.authenticate();
         sequelize.sync({ force: true });
@@ -18,6 +18,6 @@ async function dbConnection() {
 }
 
 module.exports = {
-    dbConnection,
+    dbConnection: openConnection,
     sequelize
 }
