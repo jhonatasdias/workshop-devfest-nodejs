@@ -13,6 +13,7 @@
   "dependencies": {
     "devfest-2024": "file:",
     "express": "^4.21.1",
+    "sequelize": "^6.37.5",
     "sqlite3": "^5.1.7"
   }
 }

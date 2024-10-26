@@ -1,113 +1,91 @@
 const express = require('express');
 const router = express.Router();
-const { getDb } = require('./db-connection');
+const Restaurantes = require('./restaurantes-sequelize');
 
-router.get('/', (req, res) => {
-    const db = getDb();
-    db.all(`SELECT * FROM restaurantes`, [], (err, rows) => {
-        if (err) {
-            return res.status(500).send(err.message);
-        }
-        res.status(200).json(rows);
-    });
+const validatePhoneNumber = (phone) => {
+    const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
+    return phoneRegex.test(phone);
+};
+
+router.get('/', async (req, res) => {
+
+    const restaurantes = await Restaurantes.findAll();
+
+    res.status(200).json(restaurantes);
+
 });
 
 
-router.get('/:id', (req, res) => {
-    const db = getDb(); 
+router.get('/:id', async (req, res) => {
+    
     const id = req.params.id;
-    db.get(`SELECT * FROM restaurantes WHERE id = ?`, [id], (err, row) => {
-        if (err) {
-            return res.status(500).send(err.message);
-        }
-        if (!row) {
-            return res.status(404).send('Restaurant not found');
-        }
-        res.status(200).json(row);
-    });
+
+    const restaurante = await Restaurantes.findByPk(id);
+
+    if (!restaurante) {
+        return res.status(404).send({ message: 'Restaurante não encontrado.' });
+    }
+
+    res.status(200).json(restaurante);
 });
 
-router.post('/', (req, res) => {
-    const db = getDb(); 
-    const { nome, especialidade, endereco, telefone, avaliacao } = req.body;
-    // salvar e retornar todos os dados do restaurante
-    db.run(
-        `INSERT INTO restaurantes (nome, especialidade, endereco, telefone, avaliacao) VALUES (?, ?, ?, ?, ?)`,
-        [nome, especialidade, endereco, telefone, avaliacao],
-        function (err) {
-            if (err) {
-                return res.status(500).send(err.message);
+router.post('/', async (req, res, next) => {
+    
+    try {
+        
+        const restaurantes = req.body;
+        const requiredFields = ['nome', 'especialidade', 'endereco', 'telefone', 'avaliacao'];
+    
+        for (const field of requiredFields) {
+            if (!restaurantes[field]) {
+                return res.status(400).send({ message: `Campo ${field} é obrigatório.` });
             }
-            db.get(`SELECT * FROM restaurantes WHERE id = ?`, [this.lastID], (err, row) => {
-                if (err) {
-                    return res.status(500).send(err.message);
-                }
-                res.status(201).json(row);
-            });
         }
-    );
+    
+        if (!validatePhoneNumber(restaurantes.telefone)) {
+            return res.status(400).send({ message: 'Telefone inválido. O formato correto é (xx) 99999-9999.' });
+        }
+    
+        const newRestaurante = await Restaurantes.create(restaurantes);
+    
+        res.status(201).json(newRestaurante);
+
+    } catch (error) {
+        next(error);
+    }
+    
 });
 
 
-router.put('/:id', (req, res) => {
-    const db = getDb(); 
+router.put('/:id', async (req, res) => {
+    
     const id = req.params.id;
-    const { nome, especialidade, endereco, telefone, avaliacao } = req.body;
-    db.run(
-        `UPDATE restaurantes SET nome = ?, especialidade = ?, endereco = ?, telefone = ?, avaliacao = ? WHERE id = ?`,
-        [nome, especialidade, endereco, telefone, avaliacao, id],
-        function (err) {
-            if (err) {
-                return res.status(500).send(err.message);
-            }
-            db.get(`SELECT * FROM restaurantes WHERE id = ?`, [id], (err, row) => {
-                if (err) {
-                    return res.status(500).send(err.message);
-                }
-                res.status(200).json(row);
-            });
-        }
-    );
+    const restaurante = req.body;
+
+    await Restaurantes.update(restaurante, { where: { id } });
+
+    res.status(204).send();
 });
 
 
-router.patch('/:id', (req, res) => {
-    const db = getDb(); 
+router.patch('/:id', async (req, res) => {
+    
     const id = req.params.id;
-    const { nome, especialidade, endereco, telefone, avaliacao } = req.body;
+    const restauranteFields = req.body;
 
-    const fields = [];
-    if (nome) fields.push(`nome = '${nome}'`);
-    if (especialidade) fields.push(`especialidade = '${especialidade}'`);
-    if (endereco) fields.push(`endereco = '${endereco}'`);
-    if (telefone) fields.push(`telefone = '${telefone}'`);
-    if (avaliacao) fields.push(`avaliacao = ${avaliacao}`);
+    await Restaurantes.update(restauranteFields, { where: { id } });
 
-    const updateQuery = `UPDATE restaurantes SET ${fields.join(', ')} WHERE id = ?`;
-
-    db.run(updateQuery, [id], function (err) {
-        if (err) {
-            return res.status(500).send(err.message);
-        }
-        db.get(`SELECT * FROM restaurantes WHERE id = ?`, [id], (err, row) => {
-            if (err) {
-                return res.status(500).send(err.message);
-            }
-            res.status(200).json(row);
-        });
-    });
+    res.status(204).send();
 });
 
 
-router.delete('/:id', (req, res) => {
-    const db = getDb(); 
+router.delete('/:id', async (req, res) => {
+    
     const id = req.params.id;
-    db.run(`DELETE FROM restaurantes WHERE id = ?`, [id], function (err) {
-        if (err) {
-            return res.status(500).send(err.message);
-        }
-        res.status(204).send();
-    });
+
+    await Restaurantes.destroy({ where: { id } });
+
+    res.status(204).send();
 });
 
 module.exports = router;

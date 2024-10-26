@@ -1,25 +1,23 @@
-const sqlite3 = require('sqlite3').verbose();
+const { Sequelize } = require('sequelize');
 
-let db;
+// sqlite path ./delivery.db
+const sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: './delivery.db'
+});
 
-exports.dbConnection = () => {
-    db = new sqlite3.Database('./delivery.db', (err) => {
-        if (err) {
-            console.error('Error opening database:', err.message);
-        } else {
-            console.log('Connected to the delivery database.');
-            db.run(`CREATE TABLE IF NOT EXISTS restaurantes (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome TEXT,
-                especialidade TEXT,
-                endereco TEXT,
-                telefone TEXT,
-                avaliacao REAL
-            )`);
-        }
-    });
-};
+// create table restaurantes
+async function dbConnection() {
+    try {
+        await sequelize.authenticate();
+        sequelize.sync({ force: true });
+        console.log('Connection has been established successfully.');
+    } catch (error) {
+        console.error('Unable to connect to the database:', error);
+    }
+}
 
-exports.getDb = () => {
-    return db;
-};
+module.exports = {
+    dbConnection,
+    sequelize
+}
